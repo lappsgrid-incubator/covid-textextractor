@@ -76,7 +76,7 @@ class Application implements Runnable {
         println("Limiting run to ${limit} files")
 //        FileIterator files = new FileSystemIterator(new File(indir), FileSystemIterator.JSON, limit)
         FileIterator files = null
-        Inserter inserter
+//        Inserter inserter
 
         Closure createInserter
         Closure createExtractor
@@ -86,11 +86,11 @@ class Application implements Runnable {
 
         if (search.solr != null && search.solr.size() > 0) {
             println("Creating a Solr collection")
-            inserter = SolrInserter.Http(search.solr[0], core, batchSize, inserted)
+            createInserter = { SolrInserter.Http(search.solr[0], core, batchSize, inserted) }
         }
         else if (search.elastic != null && search.elastic.size() > 0) {
             println("Creating an ElasticSearch index")
-            inserter = new ElasticInserter(search.elastic, core, batchSize, inserted)
+            createInserter = { new ElasticInserter(search.elastic, core, batchSize, inserted) }
         }
         else {
             println("Missing search engine type.")
@@ -135,7 +135,7 @@ class Application implements Runnable {
         CountDownLatch latch = new CountDownLatch(nThreads)
         List<Worker> workers = []
         for (int i = 0; i < nThreads; ++i) {
-            workers.add(new Worker(i, files, createExtractor(), inserter, latch))
+            workers.add(new Worker(i, files, createExtractor(), createInserter(), latch))
         }
 
         println "Starting ${nThreads} threads"
@@ -143,7 +143,7 @@ class Application implements Runnable {
         workers*.start()
         println "Waiting for all threads to terminate."
         workers*.join()
-        inserter.commit()
+//        inserter.commit()
         timer.stop()
 //        latch.await()
         println "Done."

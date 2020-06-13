@@ -25,7 +25,7 @@ class SolrInserter implements Inserter {
     final int batchSize
     AtomicInteger count
     final String core;
-    final Lock lock;
+//    final Lock lock;
 
     Collection<SolrDocument> cache
 
@@ -72,7 +72,6 @@ class SolrInserter implements Inserter {
         if (cache.size() >= batchSize) {
             logger.debug("Posting batch to solr: {} documents", cache.size())
             try {
-                lock.lock()
                 solr.add(core, cache)
             }
             catch (Exception e) {
@@ -81,7 +80,6 @@ class SolrInserter implements Inserter {
             }
             finally {
                 cache.clear()
-                lock.unlock()
             }
         }
         return true
