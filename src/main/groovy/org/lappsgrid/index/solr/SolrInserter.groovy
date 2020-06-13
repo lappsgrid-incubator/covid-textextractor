@@ -10,6 +10,7 @@ import org.codehaus.janino.Java.Atom
 import org.lappsgrid.index.api.Inserter
 import org.lappsgrid.index.model.LappsDocument
 
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -24,9 +25,9 @@ class SolrInserter implements Inserter {
     final int batchSize
     AtomicInteger count
     final String core;
-//    final Lock lock;
+    final Lock lock;
 
-    List<SolrDocument> cache
+    Collection<SolrDocument> cache
 
     SolrInserter(String[] servers, String core) {
         this(servers, core, BATCH_SIZE)
@@ -37,8 +38,8 @@ class SolrInserter implements Inserter {
         this.batchSize = interval
         this.count = counter
         this.core = core
-        this.cache = [].asSynchronized()
-//        this.lock = new ReentrantLock()
+        this.cache = new ConcurrentLinkedQueue<>()
+        this.lock = new ReentrantLock()
 //        logger.debug("Core: {}", core)
 //        logger.debug("Size: {}", interval)
     }
@@ -71,6 +72,7 @@ class SolrInserter implements Inserter {
         if (cache.size() >= batchSize) {
             logger.debug("Posting batch to solr: {} documents", cache.size())
             try {
+                lock.lock()
                 solr.add(core, cache)
             }
             catch (Exception e) {
@@ -79,6 +81,7 @@ class SolrInserter implements Inserter {
             }
             finally {
                 cache.clear()
+                lock.unlock()
             }
         }
         return true

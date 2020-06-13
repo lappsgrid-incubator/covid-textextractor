@@ -9,8 +9,9 @@ import org.lappsgrid.index.model.LappsDocument
 import org.lappsgrid.index.utils.FileSystemIterator
 
 /**
- *
+ * @deprecated
  */
+@Deprecated
 @Slf4j("logger")
 class Cord19Processor extends AbstractProcessor {
     Metadata metadata

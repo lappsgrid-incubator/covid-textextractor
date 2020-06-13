@@ -20,7 +20,7 @@
 	</appender>
 //
 	<logger name="org.lappgrid" level="warn"/>
-	<logger name="org.lappsgrid.index" level="debug"/>
+	<logger name="org.lappsgrid.index" level="info"/>
 	<logger name="org.lappsgrid.index.solr." level="debug"/>
 	<logger name="org.lappsgrid.index.elastic" level="trace"/>
 

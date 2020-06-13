@@ -14,6 +14,7 @@ class MetadataFileIterator implements FileIterator {
     final File base
     final Iterator<Map.Entry<String,Map>> iterator
     int counter
+    Metadata metadata
 
     MetadataFileIterator(String path, int limit = -1) {
         this(new File(path), limit);
@@ -30,6 +31,7 @@ class MetadataFileIterator implements FileIterator {
     MetadataFileIterator(File base, Metadata md, final int limit) {
         this.base = base
         this.limit = limit
+        this.metadata = md
         iterator = md.index.iterator()
         counter = 0
     }
@@ -43,10 +45,12 @@ class MetadataFileIterator implements FileIterator {
             File candidate = null
             Map<String,String> entry = iterator.next().value;
             if (entry.pmc_json_files) {
-                candidate = new File(base, entry.pmc_json_files)
+                String value = entry.pmc_json_files
+                value.split(";")
+                candidate = getFile(base, entry.pmc_json_files)
             }
             else if (entry.pdf_json_files) {
-                candidate = new File(base, entry.pdf_json_files)
+                candidate = getFile(base, entry.pdf_json_files)
             }
             if (candidate) {
                 if (candidate.exists()) {
@@ -58,4 +62,15 @@ class MetadataFileIterator implements FileIterator {
         return null
     }
 
+    File getFile(File base, String path) {
+        if (path.contains(";")) {
+            String[] parts = path.split(";")
+            parts.each { String part ->
+                File file = new File(base, part.trim())
+                if (file.exists()) return file
+            }
+            return null
+        }
+        return new File(base, path)
+    }
 }

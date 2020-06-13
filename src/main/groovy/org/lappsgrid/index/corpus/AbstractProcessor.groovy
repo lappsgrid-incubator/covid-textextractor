@@ -76,7 +76,7 @@ abstract class AbstractProcessor implements Processor, Runnable {
             }
         }
         latch.await()
-        inserter.commit()
+//        inserter.commit()
         totalTimer.stop()
         logger.info "Shutting down."
         logger.info "Total time: {}", totalTimer.toString()

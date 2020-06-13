@@ -46,6 +46,7 @@ class Worker extends Thread {
                 e.printStackTrace()
             }
         }
+        logger.info("Worker {} calling inserter.commit()")
         inserter.commit()
         logger.info("Thread {} finished.", n)
         latch.countDown()

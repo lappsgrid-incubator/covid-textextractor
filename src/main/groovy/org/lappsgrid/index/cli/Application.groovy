@@ -3,8 +3,10 @@ package org.lappsgrid.index.cli
 
 import org.lappsgrid.index.Version
 import org.lappsgrid.index.api.FileIterator
+import org.lappsgrid.index.api.Inserter
 import org.lappsgrid.index.corpus.Worker
 import org.lappsgrid.index.corpus.cord19.CordExtractor
+import org.lappsgrid.index.corpus.cord19.Metadata
 import org.lappsgrid.index.corpus.pubmed.PMCExtractor
 import org.lappsgrid.index.elastic.ElasticInserter
 import org.lappsgrid.index.solr.SolrInserter
@@ -74,6 +76,8 @@ class Application implements Runnable {
         println("Limiting run to ${limit} files")
 //        FileIterator files = new FileSystemIterator(new File(indir), FileSystemIterator.JSON, limit)
         FileIterator files = null
+        Inserter inserter
+
         Closure createInserter
         Closure createExtractor
 
@@ -82,11 +86,11 @@ class Application implements Runnable {
 
         if (search.solr != null && search.solr.size() > 0) {
             println("Creating a Solr collection")
-            createInserter = { SolrInserter.Http(search.solr[0], core, batchSize, inserted) }
+            inserter = SolrInserter.Http(search.solr[0], core, batchSize, inserted)
         }
         else if (search.elastic != null && search.elastic.size() > 0) {
             println("Creating an ElasticSearch index")
-            createInserter = { new ElasticInserter(search.elastic, core, batchSize, inserted) }
+            inserter = new ElasticInserter(search.elastic, core, batchSize, inserted)
         }
         else {
             println("Missing search engine type.")
@@ -103,7 +107,8 @@ class Application implements Runnable {
                 return
             }
             files = new MetadataFileIterator(metadataFile, limit)
-            createExtractor= { new CordExtractor(extracted, metadataFile) }
+            Metadata md = ((MetadataFileIterator) files).metadata
+            createExtractor= { new CordExtractor(extracted, md) }
         }
         else if (type.pmc) {
             if (indir == null) {
@@ -130,7 +135,7 @@ class Application implements Runnable {
         CountDownLatch latch = new CountDownLatch(nThreads)
         List<Worker> workers = []
         for (int i = 0; i < nThreads; ++i) {
-            workers.add(new Worker(i, files, createExtractor(), createInserter(), latch))
+            workers.add(new Worker(i, files, createExtractor(), inserter, latch))
         }
 
         println "Starting ${nThreads} threads"
@@ -138,6 +143,7 @@ class Application implements Runnable {
         workers*.start()
         println "Waiting for all threads to terminate."
         workers*.join()
+        inserter.commit()
         timer.stop()
 //        latch.await()
         println "Done."

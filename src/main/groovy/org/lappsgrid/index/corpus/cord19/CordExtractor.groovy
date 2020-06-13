@@ -16,10 +16,9 @@ class CordExtractor implements Extractor {
     private Metadata metadata
     private AtomicInteger counter
 
-    CordExtractor(AtomicInteger counter,  File metadataFile) {
+    CordExtractor(AtomicInteger counter,  Metadata md) {
         this.counter = counter
-        metadata = new Metadata()
-        metadata.load(metadataFile)
+        metadata = md
     }
 
     LappsDocument extract(File file) {
@@ -81,6 +80,7 @@ class CordExtractor implements Extractor {
                 .journal(entry.journal)
                 .year(entry.publish_time.split('-')[0])
                 .author(entry.author)
+                .license(entry.license ?: 'unknown')
                 .url(entry.url)
 
         return lapps
