@@ -41,7 +41,7 @@ class MetadataFileIterator implements FileIterator {
         ++counter
         while (iterator.hasNext()) {
             File candidate = null
-            Map<String,String> entry = iterator.hasNext();
+            Map<String,String> entry = iterator.next();
             if (entry.pmc_json_files) {
                 candidate = new File(base, entry.pmc_json_files)
             }
