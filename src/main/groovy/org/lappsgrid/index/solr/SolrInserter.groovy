@@ -39,7 +39,7 @@ class SolrInserter implements Inserter {
         this.count = counter
         this.core = core
         this.cache = new ConcurrentLinkedQueue<>()
-        this.lock = new ReentrantLock()
+//        this.lock = new ReentrantLock()
 //        logger.debug("Core: {}", core)
 //        logger.debug("Size: {}", interval)
     }
