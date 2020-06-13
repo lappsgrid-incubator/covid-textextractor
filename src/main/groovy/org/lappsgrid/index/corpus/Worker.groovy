@@ -17,7 +17,7 @@ class Worker extends Thread {
 
     boolean running
     int n
-    FileSystemIterator files
+    FileIterator files
     Extractor extractor
     Inserter inserter
     CountDownLatch latch
