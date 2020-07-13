@@ -18,11 +18,14 @@ import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 import picocli.CommandLine.ArgGroup
 
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- *
+ * Entry point for the application.
  */
 @Command(name="java -jar index.jar", description = "%nAdd documents to a Solr or ElasticSearch index",
         sortOptions = false, versionProvider = VersionProvider)
@@ -146,7 +149,18 @@ class Application implements Runnable {
 //        inserter.commit()
         timer.stop()
 //        latch.await()
-        println "Done."
+
+        String timestamp = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(ZonedDateTime.now())
+        File banner = new File("/tmp/update-complete.txt")
+        banner.withPrintWriter { PrintWriter writer ->
+            writer.println """<h2>$timestamp</h2>
+<p>The index has been updated to include ${inserted.get()} unique documents from 
+<a href="https://ai2-semanticscholar-cord-19.s3-us-west-2.amazonaws.com/historical_releases.html">last night's dataset</a>. 
+Updates are performed nightly so your search results may change.</p>. 
+"""
+        }
+
+        println "Wrote ${banner.path}"
         println "Inserted ${inserted.get()} documents in ${timer}"
         System.exit(0)
     }

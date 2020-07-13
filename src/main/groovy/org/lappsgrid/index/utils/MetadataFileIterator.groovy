@@ -3,8 +3,6 @@ package org.lappsgrid.index.utils
 import org.lappsgrid.index.api.FileIterator
 import org.lappsgrid.index.corpus.cord19.Metadata
 
-import java.util.concurrent.atomic.AtomicInteger
-
 /**
  *
  */
@@ -32,7 +30,7 @@ class MetadataFileIterator implements FileIterator {
         this.base = base
         this.limit = limit
         this.metadata = md
-        iterator = md.index.iterator()
+        iterator = md.pmc.iterator()
         counter = 0
     }
 

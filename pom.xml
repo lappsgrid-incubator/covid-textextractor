@@ -106,5 +106,26 @@
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>7.6.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.lappsgrid.askme</groupId>
+            <artifactId>core</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.9.2</version>
+            <classifier>models</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
     </dependencies>
 </project>

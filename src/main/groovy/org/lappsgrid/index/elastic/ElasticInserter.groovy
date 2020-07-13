@@ -55,17 +55,29 @@ class ElasticInserter implements Inserter {
     @Override
     void commit() {
         if (cache.size() > 0) {
-            send()
+            BulkRequest request = prepare()
+            if (request) {
+                send(request)
+            }
+
         }
     }
 
-    boolean send() {
+    synchronized BulkRequest prepare() {
+        if (cache.size() == 0) {
+            return null
+        }
+
         BulkRequest bulk = new BulkRequest()
         cache.each { LappsDocument doc ->
             IndexRequest request = new IndexRequest(index).source(doc.fields())
             bulk.add(request)
         }
         cache.clear()
+        return bulk
+    }
+
+    synchronized boolean send(BulkRequest bulk) {
         try {
             BulkResponse response = client.bulk(bulk, RequestOptions.DEFAULT)
             if (response.hasFailures()) {

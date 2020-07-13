@@ -1,6 +1,5 @@
 package org.lappsgrid.index.corpus.cord19
 
-import org.lappsgrid.index.utils.CSVParser
 
 //@Grab("com.opencsv:opencsv:5.1")
 import com.opencsv.CSVReader
@@ -29,8 +28,12 @@ class Metadata {
 //    has_pmc_xml_parse
 //    full_text_file
 //    url
-    Map<String,Map> index = [:]
+    Map<String,Map> pmc = [:]
     Map<String,Map> sha  = [:]
+    Map<String,Map> doi = [:]
+    Map<String,Map> pubmed = [:]
+    Map<String,Map> ids = [:]
+
     int duplicates
 
     Metadata load() {
@@ -66,11 +69,14 @@ class Metadata {
                 line.eachWithIndex{ String value, int i ->
                     entry.put(keys[i], value)
                 }
-                if (index.containsKey(entry.pmcid)) {
+                if (pmc.containsKey(entry.pmcid)) {
                     ++duplicates
                 }
                 else {
-                    index.put(entry.pmcid, entry)
+                    pmc.put(entry.pmcid, entry)
+                    ids.put(entry.id, entry)
+                    if (entry.doi) doi.put(entry.doi, entry)
+                    if (entry.pubmed_id) pubmed.put(entry.pubmed_id, entry)
                     entry.sha.split(';').each { hash ->
                         sha[hash.trim()] = entry
                     }
@@ -95,18 +101,26 @@ class Metadata {
     }
 
     List<Map> findAll(Closure query) {
-        return index.findAll(query)
+        return pmc.findAll(query)
     }
 
     Map findBySha(String sha) {
         return this.sha[sha]
     }
-
-    Map lookup(String id) {
-        return index[id]
+    Map findByDoi(String doi) {
+        return this.doi[doi]
     }
 
-    int size() { return index.size() }
+    Map lookup(String id) {
+//        return index[id]
+        if (pmc[id]) return pmc[id]
+        if (pubmed[id]) return pubmed[id]
+        if (doi[id]) return doi[id]
+        if (sha[id]) return sha[id]
+        return ids[id]
+    }
+
+    int size() { return pmc.size() }
 
     static void main(String[] args) {
         Metadata md = new Metadata()

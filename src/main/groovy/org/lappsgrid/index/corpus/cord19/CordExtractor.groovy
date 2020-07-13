@@ -16,7 +16,7 @@ class CordExtractor implements Extractor {
     private Metadata metadata
     private AtomicInteger counter
 
-    CordExtractor(AtomicInteger counter,  Metadata md) {
+    CordExtractor(AtomicInteger counter, Metadata md) {
         this.counter = counter
         metadata = md
     }
@@ -30,21 +30,21 @@ class CordExtractor implements Extractor {
         }
 
         doc.path(path)
-        if (path.contains('/comm_use_subset/')) {
-            doc.license('comm')
-        }
-        else if (path.contains("/noncomm_use_subset/")) {
-            doc.license('noncomm')
-        }
-        else if (path.contains('/custom_license/')) {
-            doc.license('custom')
-        }
-        else if (path.contains('/biorxiv_medrxiv/')) {
-            doc.license('rxiv')
-        }
-        else {
-            doc.license('unknown')
-        }
+//        if (path.contains('/comm_use_subset/')) {
+//            doc.license('comm')
+//        }
+//        else if (path.contains("/noncomm_use_subset/")) {
+//            doc.license('noncomm')
+//        }
+//        else if (path.contains('/custom_license/')) {
+//            doc.license('custom')
+//        }
+//        else if (path.contains('/biorxiv_medrxiv/')) {
+//            doc.license('rxiv')
+//        }
+//        else {
+//            doc.license('unknown')
+//        }
         counter.incrementAndGet()
         return doc
     }
@@ -79,7 +79,7 @@ class CordExtractor implements Extractor {
                 .body(text)
                 .journal(entry.journal)
                 .year(entry.publish_time.split('-')[0])
-                .author(entry.author)
+                .author(entry.authors)
                 .license(entry.license ?: 'unknown')
                 .url(entry.url)
 

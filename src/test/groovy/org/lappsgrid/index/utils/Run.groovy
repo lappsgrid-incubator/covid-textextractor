@@ -5,6 +5,14 @@ import org.junit.Test
 import org.lappsgrid.serialization.Serializer
 import org.lappsgrid.index.cli.Application
 
+import java.text.DateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+
 /**
  *
  */
@@ -57,7 +65,11 @@ class Run {
 
     @Test
     void es() {
-        Application.main("--input /var/corpora/covid/noncomm_use_subset/pmc_json --cord19 --core cord19-2020-04-26 --threads 6 --batch-size 100 --elastic http://localhost:9200".split(" "))
+        println DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(ZonedDateTime.now())
+        println DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(ZonedDateTime.now())
+//        println DateTimeFormatter.ISO_ZONED_DATE_TIME.format(LocalTime.now());
+//        Date now = new Date()
+//        printf("%4d-%02d-%02d %02d:%02d:%02d %d\n", now.year+1900, now.month+1, now.date, now.hours, now.minutes, now.seconds, now.timezoneOffset/60)
     }
 
 
